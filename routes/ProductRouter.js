@@ -19,14 +19,14 @@ const multer = require("multer");
 
 
 
-//For the DyamoDB database -- Start Here
+//For the MySQL database -- Start Here
 //Test Ok
 router.get("/get", productsControllerMySQL.getAllProducts);
 router.post("/create", productsControllerMySQL.createProduct);
-router.get("/get/:productid", productsControllerMySQL.getProductById);
-router.put("/update/:productid", productsControllerMySQL.editProductById);
+router.get("/get/:productID", productsControllerMySQL.getProductById);
+router.put("/update/:productID", productsControllerMySQL.editProductById);
 // router.delete("/delete/:productid", productsControllerMySQL.deleteProductController);
 //Un-Test
-//For the DyamoDB database -- End Here
+//For the MySQL database -- End Here
 
 module.exports = router;
