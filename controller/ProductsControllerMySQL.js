@@ -77,29 +77,31 @@ module.exports = {
         });
       });
     } catch {
-    res.status(400).json({ error: "Bad Request" });
+      res.status(400).json({ error: "Bad Request" });
     }
   },
 
   editProductById: async (req, res) => {
     try {
-      const productId = req.params.productID; // Update variable name to 'productId'
+      const productId = req.params.productID;
 
-      const sql = "SELECT * FROM products WHERE productID = ?"; // Update placeholder to '?'
+      const selectProductQuery = "SELECT * FROM products WHERE productID = ?";
+      db.query(
+        selectProductQuery,
+        [productId],
+        (selectError, selectResults) => {
+          if (selectError) {
+            console.error("Error selecting product:", selectError);
+            return res.status(500).json({ error: "Internal Server Error" });
+          }
 
-      db.query(sql, [productId], (error, results) => {
-        if (error) {
-          return res.status(500).json({ error: "Internal Server Error" });
-        }
+          if (selectResults.length === 0) {
+            return res.status(404).json({ error: "Product not found" });
+          }
 
-        if (results.length === 0) {
-          return res.status(404).json({ error: "Product not found" });
-        }
+          const existingProductData = selectResults[0];
 
-        const existingProductData = results[0];
-
-        // Update the product data with the new values or keep the existing values if not provided
-        const updateQuery = `
+          const updateQuery = `
         UPDATE products
         SET
           image = ?,
@@ -112,48 +114,55 @@ module.exports = {
           productID = ?
       `;
 
-        db.query(
-          updateQuery,
-          [
-            req.file?.path || existingProductData.image,
-            req.body.name || existingProductData.name,
-            req.body.price || existingProductData.price,
-            req.body.description || existingProductData.description,
-            req.body.quantity || existingProductData.quantity,
-            req.body.productType || existingProductData.productType,
-            productId,
-          ],
-          (updateError, updateResult) => {
-            if (updateError) {
-              return res.status(400).json(updateError);
-            }
-
-            const updatedProductQuery =
-              "SELECT * FROM products WHERE productID = ?";
-
-            db.query(
-              updatedProductQuery,
-              [productId],
-              (selectError, selectResults) => {
-                if (selectError) {
-                  return res
-                    .status(500)
-                    .json({ error: "Internal Server Error" });
-                }
-
-                const updatedProductData = selectResults[0];
-
-                return res.json({
-                  message: `The data of product ${productId} has been successfully edited.`,
-                  data: updatedProductData,
-                });
+          db.query(
+            updateQuery,
+            [
+              req.file?.path || existingProductData.image,
+              req.body.name || existingProductData.name,
+              req.body.price || existingProductData.price,
+              req.body.description || existingProductData.description,
+              req.body.quantity || existingProductData.quantity,
+              req.body.productType || existingProductData.productType,
+              productId,
+            ],
+            (updateError, updateResult) => {
+              if (updateError) {
+                console.error("Error updating product:", updateError);
+                return res.status(400).json({ error: "Bad Request" });
               }
-            );
-          }
-        );
-      });
+
+              const updatedProductQuery =
+                "SELECT * FROM products WHERE productID = ?";
+
+              db.query(
+                updatedProductQuery,
+                [productId],
+                (selectError, selectResults) => {
+                  if (selectError) {
+                    console.error(
+                      "Error selecting updated product:",
+                      selectError
+                    );
+                    return res
+                      .status(500)
+                      .json({ error: "Internal Server Error" });
+                  }
+
+                  const updatedProductData = selectResults[0];
+
+                  return res.json({
+                    message: `The data of product ${productId} has been successfully edited.`,
+                    data: updatedProductData,
+                  });
+                }
+              );
+            }
+          );
+        }
+      );
     } catch (error) {
-      res.status(400).json(error);
+      console.error("Unexpected error:", error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
   },
 };
