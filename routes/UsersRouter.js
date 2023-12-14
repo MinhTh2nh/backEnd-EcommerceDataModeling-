@@ -9,8 +9,10 @@ router.post("/register", userControllerMySQL.register);
 router.post("/login", userControllerMySQL.login);
 router.post("/loginadmin", userControllerMySQL.loginAdmin);
 router.get("/get", userControllerMySQL.getAllUsers);
-router.get("/get/:userId", userControllerMySQL.getUserId);
-router.delete("/delete/:userId", userControllerMySQL.deleteById);
+router.get("/get/:userID", userControllerMySQL.getUserID);
+router.delete("/delete/:userID", userControllerMySQL.deleteById);
+router.put("/update/:userID", userControllerMySQL.updateID);
+
 // router.get("/get/:userId", validateAdmin, userControllerMySQL.getUserId);
 // router.delete("/delete/:userId", validateAdmin, userControllerMySQL.deleteById);
 

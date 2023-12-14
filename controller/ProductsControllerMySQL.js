@@ -83,77 +83,41 @@ module.exports = {
 
   editProductById: async (req, res) => {
     try {
-      const productId = req.params.productID; // Update variable name to 'productId'
-
-      const sql = "SELECT * FROM products WHERE productID = ?"; // Update placeholder to '?'
-
-      db.query(sql, [productId], (error, results) => {
-        if (error) {
-          return res.status(500).json({ error: "Internal Server Error" });
+      const productID = req.params.productID;
+      const { image, name, price, description, quantity, productType } = req.body;
+  
+      // Validate input or perform additional checks if needed
+  
+      const updateSql = "UPDATE products SET image=?, name=?, price=?, description=?, quantity=?, productType=? WHERE productID=?";
+      const updateValues = [image, name, price, description, quantity, productType, productID];
+  
+      db.query(updateSql, updateValues, (updateErr, updateResult) => {
+        if (updateErr) {
+          return res.status(500).json({
+            status: "error",
+            message: "Internal server error",
+            error: updateErr.message,
+          });
         }
-
-        if (results.length === 0) {
-          return res.status(404).json({ error: "Product not found" });
+  
+        if (updateResult.affectedRows === 0) {
+          return res.status(404).json({
+            status: "error",
+            message: `Product with ID ${productID} not found`,
+          });
         }
-
-        const existingProductData = results[0];
-
-        // Update the product data with the new values or keep the existing values if not provided
-        const updateQuery = `
-        UPDATE products
-        SET
-          image = ?,
-          name = ?,
-          price = ?,
-          description = ?,
-          quantity = ?,
-          productType = ?
-        WHERE
-          productID = ?
-      `;
-
-        db.query(
-          updateQuery,
-          [
-            req.file?.path || existingProductData.image,
-            req.body.name || existingProductData.name,
-            req.body.price || existingProductData.price,
-            req.body.description || existingProductData.description,
-            req.body.quantity || existingProductData.quantity,
-            req.body.productType || existingProductData.productType,
-            productId,
-          ],
-          (updateError, updateResult) => {
-            if (updateError) {
-              return res.status(400).json(updateError);
-            }
-
-            const updatedProductQuery =
-              "SELECT * FROM products WHERE productID = ?";
-
-            db.query(
-              updatedProductQuery,
-              [productId],
-              (selectError, selectResults) => {
-                if (selectError) {
-                  return res
-                    .status(500)
-                    .json({ error: "Internal Server Error" });
-                }
-
-                const updatedProductData = selectResults[0];
-
-                return res.json({
-                  message: `The data of product ${productId} has been successfully edited.`,
-                  data: updatedProductData,
-                });
-              }
-            );
-          }
-        );
+  
+        res.json({
+          status: "success",
+          message: `Successfully updated product with ID ${productID}!`,
+        });
       });
     } catch (error) {
-      res.status(400).json(error);
+      res.status(400).json({
+        status: "error",
+        message: "Bad request",
+        error: error.message,
+      });
     }
   },
 };
