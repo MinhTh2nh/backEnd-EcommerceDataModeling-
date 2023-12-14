@@ -100,7 +100,7 @@ module.exports = {
             payload,
             process.env.JWT_SECRET_KEY,
             {
-              expiresIn: 3155,
+              expiresIn: 100,
             },
             (err, token) => {
               res.json({
@@ -144,13 +144,13 @@ module.exports = {
             error: "User not found",
           });
         }
+        const user = result[0];
 
         if (!user || user.email !== "admin@gmail.com") {
           return res
             .status(404)
             .json({ status: "failed", error: "Admin's email not found" });
         }
-        const user = result[0];
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (passwordMatch) {
           const payload = {
@@ -161,7 +161,7 @@ module.exports = {
           jwt.sign(
             payload,
             process.env.PRIVATE_KEY,
-            { expiresIn: 3155 },
+            { expiresIn: 100 },
             (err, token) => {
               res.json({
                 status: "success",
@@ -202,7 +202,7 @@ module.exports = {
   },
 
   //Get user by ID
-  getUserId: async (req, res) => {
+  getUserID: async (req, res) => {
     try {
       const userID = req.params.userID;
       const sql = "SELECT * FROM users WHERE userID = ?";
@@ -235,4 +235,84 @@ module.exports = {
       res.status(400).json(error);
     }
   },
+
+    //Update user by ID
+    updateID: async (req, res) => {
+      try {
+        const userID = req.params.userID;
+        const { username, email, phoneNumber } = req.body;
+    
+        // Check if the new email already exists in the database
+        const emailCheckSql = "SELECT COUNT(*) as count FROM users WHERE email = ?";
+        const emailCheckValues = [email];
+    
+        db.query(emailCheckSql, emailCheckValues, (emailCheckErr, emailCheckResult) => {
+          if (emailCheckErr) {
+            return res.status(500).json({
+              status: "error",
+              message: "Internal server error",
+              error: emailCheckErr.message,
+            });
+          }
+    
+          const emailExists = emailCheckResult[0].count > 0;
+    
+          if (emailExists) {
+            return res.status(400).json({
+              status: "error",
+              message: "Email already exists in the database",
+            });
+          }
+    
+          // Check if the new phoneNumber already exists in the database
+          const phoneNumberCheckSql = "SELECT COUNT(*) as count FROM users WHERE phoneNumber = ?";
+          const phoneNumberCheckValues = [phoneNumber];
+    
+          db.query(phoneNumberCheckSql, phoneNumberCheckValues, (phoneNumberCheckErr, phoneNumberCheckResult) => {
+            if (phoneNumberCheckErr) {
+              return res.status(500).json({
+                status: "error",
+                message: "Internal server error",
+                error: phoneNumberCheckErr.message,
+              });
+            }
+    
+            const phoneNumberExists = phoneNumberCheckResult[0].count > 0;
+    
+            if (phoneNumberExists) {
+              return res.status(400).json({
+                status: "error",
+                message: "Phone number already exists in the database",
+              });
+            }
+    
+            // If both email and phoneNumber are unique, proceed with the update
+            const updateSql = "UPDATE users SET username=?, email=?, phoneNumber=? WHERE userID=?";
+            const updateValues = [username, email, phoneNumber, userID];
+    
+            db.query(updateSql, updateValues, (updateErr, updateResult) => {
+              if (updateErr) {
+                return res.status(500).json({
+                  status: "error",
+                  message: "Internal server error",
+                  error: updateErr.message,
+                });
+              }
+    
+              res.json({
+                status: "success",
+                message: `Successfully updated user with ID ${userID}!`,
+              });
+            });
+          });
+        });
+      } catch (error) {
+        res.status(400).json({
+          status: "error",
+          message: "Bad request",
+          error: error.message,
+        });
+      }
+    },
+    
 };
