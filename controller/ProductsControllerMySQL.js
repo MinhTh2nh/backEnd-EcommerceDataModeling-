@@ -77,92 +77,47 @@ module.exports = {
         });
       });
     } catch {
-      res.status(400).json({ error: "Bad Request" });
+    res.status(400).json({ error: "Bad Request" });
     }
   },
 
   editProductById: async (req, res) => {
     try {
-      const productId = req.params.productID;
-
-      const selectProductQuery = "SELECT * FROM products WHERE productID = ?";
-      db.query(
-        selectProductQuery,
-        [productId],
-        (selectError, selectResults) => {
-          if (selectError) {
-            console.error("Error selecting product:", selectError);
-            return res.status(500).json({ error: "Internal Server Error" });
-          }
-
-          if (selectResults.length === 0) {
-            return res.status(404).json({ error: "Product not found" });
-          }
-
-          const existingProductData = selectResults[0];
-
-          const updateQuery = `
-        UPDATE products
-        SET
-          image = ?,
-          name = ?,
-          price = ?,
-          description = ?,
-          quantity = ?,
-          productType = ?
-        WHERE
-          productID = ?
-      `;
-
-          db.query(
-            updateQuery,
-            [
-              req.file?.path || existingProductData.image,
-              req.body.name || existingProductData.name,
-              req.body.price || existingProductData.price,
-              req.body.description || existingProductData.description,
-              req.body.quantity || existingProductData.quantity,
-              req.body.productType || existingProductData.productType,
-              productId,
-            ],
-            (updateError, updateResult) => {
-              if (updateError) {
-                console.error("Error updating product:", updateError);
-                return res.status(400).json({ error: "Bad Request" });
-              }
-
-              const updatedProductQuery =
-                "SELECT * FROM products WHERE productID = ?";
-
-              db.query(
-                updatedProductQuery,
-                [productId],
-                (selectError, selectResults) => {
-                  if (selectError) {
-                    console.error(
-                      "Error selecting updated product:",
-                      selectError
-                    );
-                    return res
-                      .status(500)
-                      .json({ error: "Internal Server Error" });
-                  }
-
-                  const updatedProductData = selectResults[0];
-
-                  return res.json({
-                    message: `The data of product ${productId} has been successfully edited.`,
-                    data: updatedProductData,
-                  });
-                }
-              );
-            }
-          );
+      const productID = req.params.productID;
+      const { image, name, price, description, quantity, productType } = req.body;
+  
+      // Validate input or perform additional checks if needed
+  
+      const updateSql = "UPDATE products SET image=?, name=?, price=?, description=?, quantity=?, productType=? WHERE productID=?";
+      const updateValues = [image, name, price, description, quantity, productType, productID];
+  
+      db.query(updateSql, updateValues, (updateErr, updateResult) => {
+        if (updateErr) {
+          return res.status(500).json({
+            status: "error",
+            message: "Internal server error",
+            error: updateErr.message,
+          });
         }
-      );
+  
+        if (updateResult.affectedRows === 0) {
+          return res.status(404).json({
+            status: "error",
+            message: `Product with ID ${productID} not found`,
+          });
+        }
+  
+        res.json({
+          status: "success",
+          message: `Successfully updated product with ID ${productID}!`,
+        });
+      });
     } catch (error) {
-      console.error("Unexpected error:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(400).json({
+        status: "error",
+        message: "Bad request",
+        error: error.message,
+      });
     }
   },
 };
