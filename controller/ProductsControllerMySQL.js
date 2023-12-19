@@ -120,4 +120,19 @@ module.exports = {
       });
     }
   },
+  deleteProductController: async (req, res) => {
+    try {
+      const productID = req.params.productID;
+      const sql = "DELETE FROM products WHERE productID =?";
+      const value = [productID];
+      db.query(sql, value, (err, result) => {
+        res.json({
+          status: "success",
+          message: `Successfully delete id of ${productID} !`,
+        });
+      });
+    } catch (err) {
+      res.status(400).json(error);
+    }
+  },
 };

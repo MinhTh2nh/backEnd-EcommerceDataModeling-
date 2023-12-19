@@ -25,7 +25,7 @@ router.get("/get", productsControllerMySQL.getAllProducts);
 router.post("/create", productsControllerMySQL.createProduct);
 router.get("/get/:productID", productsControllerMySQL.getProductById);
 router.put("/update/:productID", productsControllerMySQL.editProductById);
-// router.delete("/delete/:productid", productsControllerMySQL.deleteProductController);
+router.delete("/delete/:productID", productsControllerMySQL.deleteProductController);
 //Un-Test
 //For the MySQL database -- End Here
 
