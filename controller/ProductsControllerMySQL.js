@@ -12,6 +12,7 @@ module.exports = {
       description: req.body.description,
       quantity: req.body.quantity,
       productType: req.body.productType,
+      status: req.body.status,
     };
 
     const obj = {
@@ -21,6 +22,7 @@ module.exports = {
       description: req.body.description,
       quantity: req.body.quantity,
       productType: req.body.productType,
+      status: req.body.status,
     };
 
     const producyData = obj.image === undefined ? objWithoutImage : obj;
@@ -44,6 +46,25 @@ module.exports = {
     try {
       const sql = "SELECT * FROM products";
       db.query(sql, (err, result) => {
+        res.status(200).json({
+          status: "success",
+          message: "Successfully get all products!",
+          data: result,
+        });
+      });
+    } catch (error) {
+      res.status(400).json(error);
+    }
+  },
+
+  
+  getAllProductAvailable: async (req, res) => {
+    try {
+      const status = "Available";
+      const sql = "SELECT * FROM products where status = ?";
+      const value = [status];
+
+      db.query(sql, value , (err, result) => {
         res.status(200).json({
           status: "success",
           message: "Successfully get all products!",
@@ -84,12 +105,11 @@ module.exports = {
   editProductById: async (req, res) => {
     try {
       const productID = req.params.productID;
-      const { image, name, price, description, quantity, productType } = req.body;
+      const { image, name, price, description, quantity, productType , status } = req.body;
   
       // Validate input or perform additional checks if needed
-  
-      const updateSql = "UPDATE products SET image=?, name=?, price=?, description=?, quantity=?, productType=? WHERE productID=?";
-      const updateValues = [image, name, price, description, quantity, productType, productID];
+      const updateSql = "UPDATE products SET image=?, name=?, price=?, description=?, quantity=?, productType=? , status= ? WHERE productID=?";
+      const updateValues = [image, name, price, description, quantity, productType, status , productID];
   
       db.query(updateSql, updateValues, (updateErr, updateResult) => {
         if (updateErr) {

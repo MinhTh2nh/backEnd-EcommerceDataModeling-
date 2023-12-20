@@ -21,7 +21,8 @@ const multer = require("multer");
 
 //For the MySQL database -- Start Here
 //Test Ok
-router.get("/get", productsControllerMySQL.getAllProducts);
+router.get("/get", productsControllerMySQL.getAllProductAvailable);
+router.get("/getAllProducts", productsControllerMySQL.getAllProducts);
 router.post("/create", productsControllerMySQL.createProduct);
 router.get("/get/:productID", productsControllerMySQL.getProductById);
 router.put("/update/:productID", productsControllerMySQL.editProductById);
