@@ -13,9 +13,5 @@ router.get("/get/:userID", userControllerMySQL.getUserID);
 router.delete("/delete/:userID", userControllerMySQL.deleteById);
 router.put("/update/:userID", userControllerMySQL.updateID);
 
-// router.get("/get/:userId", validateAdmin, userControllerMySQL.getUserId);
-// router.delete("/delete/:userId", validateAdmin, userControllerMySQL.deleteById);
-
-
 
 module.exports = router;
