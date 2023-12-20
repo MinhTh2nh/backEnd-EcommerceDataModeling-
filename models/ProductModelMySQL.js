@@ -24,6 +24,10 @@ module.exports = (sequenlize, DataTypes) => {
       type: DataTypes.STRING,
       required: true,
     },
+    status: {
+      type: DataTypes.STRING,
+      required: true,
+    },
   });
   return ProductModelMySQL;
 };
