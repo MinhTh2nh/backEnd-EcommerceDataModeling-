@@ -4,32 +4,21 @@ require("dotenv").config();
 
 module.exports = {
   createProduct: (req, res) => {
-    console.log(req.body.image);
-
-    const objWithoutImage = {
-      name: req.body.name,
-      price: req.body.price,
-      description: req.body.description,
-      quantity: req.body.quantity,
-      productType: req.body.productType,
-      status: req.body.status,
-    };
-
     const obj = {
-      image: req.file && req.file.path,
+      image: req.body.image,
       name: req.body.name,
       price: req.body.price,
       description: req.body.description,
       quantity: req.body.quantity,
       productType: req.body.productType,
-      status: req.body.status,
+      status: req.body.quantity === 0 ? 'Unavailable' : 'Available',
     };
 
-    const producyData = obj.image === undefined ? objWithoutImage : obj;
+    const productData = obj;
 
     const insertQuery = "INSERT INTO products SET ?";
 
-    db.query(insertQuery, producyData, (error, result) => {
+    db.query(insertQuery, productData, (error, result) => {
       if (error) {
         return res.status(400).json(error);
       }
