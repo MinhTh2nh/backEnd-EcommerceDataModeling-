@@ -1,30 +1,48 @@
 module.exports = (sequenlize, DataTypes) => {
-  const OrderModelSQL = sequenlize.define("order", {
-    image: {
-      type: DataTypes.STRING,
-      default: "public/productImages/default-product-image.jpg",
-    },
-    name: {
+  const OrderModelSQL = sequenlize.define("orders", {
+    firstName: {
       type: DataTypes.STRING,
       require: true,
     },
-    price: {
+    lastName: {
+      type: DataTypes.STRING,
+      require: true,
+    },
+    email: {
       type: DataTypes.STRING,
       required: true,
     },
-    description: {
+    country: {
       type: DataTypes.STRING,
       required: true,
     },
-    quantity: {
+    city: {
+      type: DataTypes.STRING,
+      required: true,
+    },
+    address: {
+      type: DataTypes.STRING,
+      required: true,
+    },
+
+    phoneNumber: {
+      type: DataTypes.INTEGER,
+      required: false,
+    },
+    postalCode: {
       type: DataTypes.NUMBER,
+      required: false,
+    },
+    userID : {
+      type: DataTypes.INTEGER,
       required: true,
     },
-    productType: {
+
+    status: {
       type: DataTypes.STRING,
       required: true,
     },
-    status: {
+    totalPrice: {
       type: DataTypes.STRING,
       required: true,
     },
