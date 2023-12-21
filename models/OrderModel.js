@@ -1,52 +1,33 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema; // Add this line
-
-const OrderModel = new Schema(
-  {
-    firstName: {
-      type: String,
+module.exports = (sequenlize, DataTypes) => {
+  const OrderModelSQL = sequenlize.define("order", {
+    image: {
+      type: DataTypes.STRING,
+      default: "public/productImages/default-product-image.jpg",
+    },
+    name: {
+      type: DataTypes.STRING,
+      require: true,
+    },
+    price: {
+      type: DataTypes.STRING,
       required: true,
     },
-    lastName: {
-      type: String,
+    description: {
+      type: DataTypes.STRING,
       required: true,
     },
-    email: {
-      type: String,
+    quantity: {
+      type: DataTypes.NUMBER,
       required: true,
     },
-    country: {
-      type: String,
+    productType: {
+      type: DataTypes.STRING,
       required: true,
     },
-    city: {
-      type: String,
+    status: {
+      type: DataTypes.STRING,
       required: true,
     },
-    address: {
-      type: String,
-      required: true,
-    },
-    phoneNumber: {
-      type: Number,
-      required: true,
-    },
-    postalCode: {
-      type: Number,
-      required: true,
-    },
-    products: {
-      type: Array,
-      required: true,
-    },
-    customerId: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: "UsersModel",
-    },
-  },
-  { timestamps: true }
-);
-
-const Order = mongoose.model("Order", OrderModel);
-module.exports = Order;
+  });
+  return OrderModelSQL;
+};
