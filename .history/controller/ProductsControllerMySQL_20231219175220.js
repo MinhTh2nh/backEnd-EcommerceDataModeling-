@@ -24,7 +24,7 @@ module.exports = {
     };
 
     const producyData = obj.image === undefined ? objWithoutImage : obj;
-    console.log(producyData);
+
     const insertQuery = "INSERT INTO products SET ?";
 
     db.query(insertQuery, producyData, (error, result) => {
@@ -77,30 +77,20 @@ module.exports = {
         });
       });
     } catch {
-      res.status(400).json({ error: "Bad Request" });
+    res.status(400).json({ error: "Bad Request" });
     }
   },
 
   editProductById: async (req, res) => {
     try {
       const productID = req.params.productID;
-      const { image, name, price, description, quantity, productType } =
-        req.body;
-
+      const { image, name, price, description, quantity, productType } = req.body;
+  
       // Validate input or perform additional checks if needed
-
-      const updateSql =
-        "UPDATE products SET image=?, name=?, price=?, description=?, quantity=?, productType=? WHERE productID=?";
-      const updateValues = [
-        image,
-        name,
-        price,
-        description,
-        quantity,
-        productType,
-        productID,
-      ];
-
+  
+      const updateSql = "UPDATE products SET image=?, name=?, price=?, description=?, quantity=?, productType=? WHERE productID=?";
+      const updateValues = [image, name, price, description, quantity, productType, productID];
+  
       db.query(updateSql, updateValues, (updateErr, updateResult) => {
         if (updateErr) {
           return res.status(500).json({
@@ -109,14 +99,14 @@ module.exports = {
             error: updateErr.message,
           });
         }
-
+  
         if (updateResult.affectedRows === 0) {
           return res.status(404).json({
             status: "error",
             message: `Product with ID ${productID} not found`,
           });
         }
-
+  
         res.json({
           status: "success",
           message: `Successfully updated product with ID ${productID}!`,

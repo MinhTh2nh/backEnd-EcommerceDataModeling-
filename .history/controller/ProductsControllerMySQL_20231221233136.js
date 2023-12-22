@@ -24,7 +24,7 @@ module.exports = {
     };
 
     const producyData = obj.image === undefined ? objWithoutImage : obj;
-    console.log(producyData);
+
     const insertQuery = "INSERT INTO products SET ?";
 
     db.query(insertQuery, producyData, (error, result) => {
