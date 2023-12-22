@@ -2,7 +2,8 @@ module.exports = (sequenlize, DataTypes) => {
   const ProductModelMySQL = sequenlize.define("product", {
     image: {
       type: DataTypes.STRING,
-      default: "public/productImages/default-product-image.jpg",
+      defaultValue: "public/productImages/default-product-image.jpg",
+      allowNull: true,
     },
     name: {
       type: DataTypes.STRING,
@@ -21,6 +22,10 @@ module.exports = (sequenlize, DataTypes) => {
       required: true,
     },
     productType: {
+      type: DataTypes.STRING,
+      required: true,
+    },
+    status: {
       type: DataTypes.STRING,
       required: true,
     },

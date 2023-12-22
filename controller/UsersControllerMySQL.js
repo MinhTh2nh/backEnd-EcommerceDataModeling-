@@ -38,7 +38,7 @@ module.exports = {
         const hashedPassword = await bcrypt.hash(password, 10);
         // If email doesn't exist, insert the new user
         const insertUserQuery = 'INSERT INTO users SET ?';
-        db.query(insertUserQuery, { username, email, phoneNumber,  password: hashedPassword }, (err, result) => {
+        db.query(insertUserQuery, { username, email, phoneNumber,  password: hashedPassword , role: 'Customer' , status: 'Active'}, (err, result) => {
           if (err) {
             return res.status(400).json(err);
           }
@@ -83,6 +83,13 @@ module.exports = {
   
         const user = result[0];
   
+        if (user.status === 'Banned') {
+          return res.status(404).json({
+            status: "failed",
+            error: "User has been banned",
+          });
+        }
+
         // Validate password
         const passwordMatch = await bcrypt.compare(password, user.password);
   
@@ -146,7 +153,7 @@ module.exports = {
         }
         const user = result[0];
 
-        if (!user || user.email !== "admin@gmail.com") {
+        if (!user || user.role !== "Admin") {
           return res
             .status(404)
             .json({ status: "failed", error: "Admin's email not found" });
@@ -223,16 +230,19 @@ module.exports = {
   deleteById: async (req, res) => {
     try {
       const userID = req.params.userID;
-      const sql = "DELETE FROM users WHERE userID =?";
+      const sql = "UPDATE users SET status = 'Banned' WHERE userID = ?";
       const value = [userID];
       db.query(sql, value, (err, result) => {
         res.json({
           status: "success",
-          message: `Successfully delete id of ${userID} !`,
+          message: `Successfully banned user with ID ${userID}!`,
         });
       });
-    } catch (err) {
-      res.status(400).json(error);
+    } catch (err)  {
+      res.status(400).json({
+        status: "error",
+        message: "Bad Request",
+      });
     }
   },
 

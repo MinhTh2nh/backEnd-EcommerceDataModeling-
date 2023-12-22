@@ -1,8 +1,11 @@
 const orderModel = require("../models/OrderModel");
+const OrderDetailModel = require("../models/OrderDetailModel");
+const db = require("../config/db");
+require("dotenv").config();
 
 module.exports = {
-  createOrder: (req, res, next) => {
-    let obj = {
+  createOrder: (req, res) => {
+    const obj = {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
@@ -11,40 +14,98 @@ module.exports = {
       address: req.body.address,
       phoneNumber: req.body.phoneNumber,
       postalCode: req.body.postalCode,
-      products: req.body.products,
-      customerId: req.body.customerId,
+      userID : req.body.userID ,
+      totalPrice: req.body.totalPrice,
+      status: 'Draft',
     };
-    orderModel
-      .create(obj)
-      .then((response) => {
-        res.json(response);
-      })
-      .catch((err) => res.status(400).json(err));
+
+    const order_detail_list = req.body.products ;
+
+    const orderData = obj;
+
+    const insertQuery = "INSERT INTO orders SET ?";
+
+    db.query(insertQuery, orderData, (error, result) => {
+      if (error) {
+        return res.status(400).json(error);
+      }
+
+      return res.json({
+        status: "success",
+        message: "Successfully create order!",
+        data: result,
+      });
+    });
   },
-  getAllOrder: (req, res, next) => {
-    orderModel
-      .find({})
-      //1st parameter must same as orderModel's field name
-      //2nd parameter is for what field do you want to show
-      .populate("customerId", "username email phoneNumber")
-      .then((result) => {
-        res.json({
+
+  getAllOrder: async (req, res) => {
+    try {
+      const sql = "SELECT * FROM orders";
+      db.query(sql, (err, result) => {
+        res.status(200).json({
           status: "success",
-          message: `Successfully get data order!`,
+          message: "Successfully get all orders!",
           data: result,
         });
-      })
-      .catch((error) => res.status(400).json(error));
+      });
+    } catch (error) {
+      res.status(400).json(error);
+    }
   },
-  deleteById: (req, res, next) => {
-    orderModel
-      .findByIdAndRemove(req.params.orderId)
-      .then(() => {
+
+  editOrderById: async (req, res) => {
+    try {
+      const orderID = req.params.orderID;
+      const { firstName, lastName, email, country, city, address, phoneNumber, postalCode , status , totalPrice } = req.body;
+    
+      const updateSql =
+        'UPDATE orders SET firstName=?, lastName=?, email=?, country=?, city=?, address=?, phoneNumber=? , postalCode=? , status=? , totalPrice=? WHERE orderID=?';
+        
+      const updateValues = [firstName, lastName, email, country, city, address, updatedStatus, orderID];
+  
+      db.query(updateSql, updateValues, (updateErr, updateResult) => {
+        if (updateErr) {
+          return res.status(500).json({
+            status: 'error',
+            message: 'Internal server error',
+            error: updateErr.message,
+          });
+        }
+  
+        if (updateResult.affectedRows === 0) {
+          return res.status(404).json({
+            status: 'error',
+            message: `Order with ID ${orderID} not found`,
+          });
+        }
+  
+        res.json({
+          status: 'success',
+          message: `Successfully updated Order with ID ${orderID}!`,
+        });
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: 'error',
+        message: 'Bad request',
+        error: error.message,
+      });
+    }
+  },
+
+  deleteById: async (req, res) => {
+    try {
+      const orderID = req.params.orderID;
+      const sql = "DELETE FROM orders WHERE orderID =?";
+      const value = [orderID];
+      db.query(sql, value, (err, result) => {
         res.json({
           status: "success",
-          message: `Successfully delete id of ${req.params.orderId} !`,
+          message: `Successfully delete id of ${orderID} !`,
         });
-      })
-      .catch((error) => res.status(400).json(error));
+      });
+    } catch (err) {
+      res.status(400).json(error);
+    }
   },
 };

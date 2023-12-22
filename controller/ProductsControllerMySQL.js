@@ -4,30 +4,21 @@ require("dotenv").config();
 
 module.exports = {
   createProduct: (req, res) => {
-    console.log(req.body.image);
-
-    const objWithoutImage = {
-      name: req.body.name,
-      price: req.body.price,
-      description: req.body.description,
-      quantity: req.body.quantity,
-      productType: req.body.productType,
-    };
-
     const obj = {
-      image: req.file && req.file.path,
+      image: req.body.image,
       name: req.body.name,
       price: req.body.price,
       description: req.body.description,
       quantity: req.body.quantity,
       productType: req.body.productType,
+      status: req.body.quantity === 0 ? "Unavailable" : "Available",
     };
 
-    const producyData = obj.image === undefined ? objWithoutImage : obj;
-    console.log(producyData);
+    const producyData = obj;
+
     const insertQuery = "INSERT INTO products SET ?";
 
-    db.query(insertQuery, producyData, (error, result) => {
+    db.query(insertQuery, productData, (error, result) => {
       if (error) {
         return res.status(400).json(error);
       }
@@ -55,6 +46,42 @@ module.exports = {
     }
   },
 
+  getAllProductAvailable: async (req, res) => {
+    try {
+      const status = "Available";
+      const sql = "SELECT * FROM products where status = ?";
+      const value = [status];
+
+      db.query(sql, value, (err, result) => {
+        res.status(200).json({
+          status: "success",
+          message: "Successfully get all products!",
+          data: result,
+        });
+      });
+    } catch (error) {
+      res.status(400).json(error);
+    }
+  },
+
+  getProductUnavailable: async (req, res) => {
+    try {
+      const status = "Unavailable";
+      const sql = "SELECT * FROM products where status = ?";
+      const value = [status];
+
+      db.query(sql, value, (err, result) => {
+        res.status(200).json({
+          status: "success",
+          message: "Successfully get all products!",
+          data: result,
+        });
+      });
+    } catch (error) {
+      res.status(400).json(error);
+    }
+  },
+
   getProductById: async (req, res) => {
     try {
       const productID = req.params.productID;
@@ -64,11 +91,9 @@ module.exports = {
         if (error) {
           return res.status(500).json({ error: "Internal Server Error" });
         }
-
         if (results.length === 0) {
           return res.status(404).json({ error: "Product not found" });
         }
-
         const productData = results[0];
 
         return res.json({
@@ -130,6 +155,7 @@ module.exports = {
       });
     }
   },
+
   deleteProductController: async (req, res) => {
     try {
       const productID = req.params.productID;
