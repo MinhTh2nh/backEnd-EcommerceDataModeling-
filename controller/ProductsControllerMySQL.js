@@ -11,7 +11,7 @@ module.exports = {
       description: req.body.description,
       quantity: req.body.quantity,
       productType: req.body.productType,
-      status: req.body.quantity === 0 ? 'Unavailable' : 'Available',
+      status: req.body.quantity === 0 ? "Unavailable" : "Available",
     };
 
     const productData = obj;
@@ -46,14 +46,13 @@ module.exports = {
     }
   },
 
-  
   getAllProductAvailable: async (req, res) => {
     try {
       const status = "Available";
       const sql = "SELECT * FROM products where status = ?";
       const value = [status];
 
-      db.query(sql, value , (err, result) => {
+      db.query(sql, value, (err, result) => {
         res.status(200).json({
           status: "success",
           message: "Successfully get all products!",
@@ -71,7 +70,7 @@ module.exports = {
       const sql = "SELECT * FROM products where status = ?";
       const value = [status];
 
-      db.query(sql, value , (err, result) => {
+      db.query(sql, value, (err, result) => {
         res.status(200).json({
           status: "success",
           message: "Successfully get all products!",
@@ -103,47 +102,57 @@ module.exports = {
         });
       });
     } catch {
-    res.status(400).json({ error: "Bad Request" });
+      res.status(400).json({ error: "Bad Request" });
     }
   },
 
   editProductById: async (req, res) => {
     try {
       const productID = req.params.productID;
-      const { image, name, price, description, quantity, productType, status } = req.body;
-  
-      const updatedStatus = quantity === 0 ? 'Unavailable' : status;
-  
+      const { image, name, price, description, quantity, productType, status } =
+        req.body;
+
+      const updatedStatus = quantity === 0 ? "Unavailable" : status;
+
       const updateSql =
-        'UPDATE products SET image=?, name=?, price=?, description=?, quantity=?, productType=?, status=? WHERE productID=?';
-        
-      const updateValues = [image, name, price, description, quantity, productType, updatedStatus, productID];
-  
+        "UPDATE products SET image=?, name=?, price=?, description=?, quantity=?, productType=?, status=? WHERE productID=?";
+
+      const updateValues = [
+        image,
+        name,
+        price,
+        description,
+        quantity,
+        productType,
+        updatedStatus,
+        productID,
+      ];
+
       db.query(updateSql, updateValues, (updateErr, updateResult) => {
         if (updateErr) {
           return res.status(500).json({
-            status: 'error',
-            message: 'Internal server error',
+            status: "error",
+            message: "Internal server error",
             error: updateErr.message,
           });
         }
-  
+
         if (updateResult.affectedRows === 0) {
           return res.status(404).json({
-            status: 'error',
+            status: "error",
             message: `Product with ID ${productID} not found`,
           });
         }
-  
+
         res.json({
-          status: 'success',
+          status: "success",
           message: `Successfully updated product with ID ${productID}!`,
         });
       });
     } catch (error) {
       res.status(400).json({
-        status: 'error',
-        message: 'Bad request',
+        status: "error",
+        message: "Bad request",
         error: error.message,
       });
     }
