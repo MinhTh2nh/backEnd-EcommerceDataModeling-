@@ -4,20 +4,6 @@ const { validateAdmin, validateUser } = require("../validator/UsersValidator");
 const productsControllerMySQL = require("../controller/ProductsControllerMySQL");
 const multer = require("multer");
 
-// const storage = multer.diskStorage({
-//   destination: function (req, res, cb) {
-//     cb(null, "./public/productImages/");
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, new Date().toISOString() + "-" + file.originalname);
-//   },
-// });
-
-// const upload = multer({
-//   storage: storage,
-// });
-
-
 
 //For the MySQL database -- Start Here
 //Test Ok
