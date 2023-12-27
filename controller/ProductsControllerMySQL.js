@@ -63,6 +63,24 @@ module.exports = {
       res.status(400).json(error);
     }
   },
+  getAllProductAvailableByProductType: async (req, res) => {
+    try {
+      const status = "Available";
+      const productType = req.params.productType;
+      const sql = "SELECT * FROM products where status = ? and productType = ?";
+      const value = [status , productType];
+
+      db.query(sql, value, (err, result) => {
+        res.status(200).json({
+          status: "success",
+          message: "Successfully get all products!",
+          data: result,
+        });
+      });
+    } catch (error) {
+      res.status(400).json(error);
+    }
+  },
 
   getProductUnavailable: async (req, res) => {
     try {
@@ -173,4 +191,46 @@ module.exports = {
       res.status(400).json(error);
     }
   },
-};
+  checkQuantityOfProduct: async (req, res) => {
+    try {
+        const productID = req.body.productID;
+        const requestedQuantity = req.body.quantity;
+        const sql = 'SELECT quantity FROM products WHERE productID = ?';
+        const values = [productID];
+
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                throw new Error(err.message);
+            }
+
+            if (result.length > 0) {
+                const availableQuantity = result[0].quantity;
+
+                if (availableQuantity >= requestedQuantity) {
+                    res.status(200).json({
+                        status: 'Sufficient Quantity',
+                        message: 'Product has enough quantity',
+                    });
+                } else {
+                    res.status(400).json({
+                        status: 'Not Enough Quantity',
+                        message: 'Not Enough Quantity',
+                    });
+                }
+            } else {
+                res.status(404).json({
+                    status: 'Product not found',
+                    message: `Product with ID ${productID} not found`,
+                });
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: 'Internal Server Error',
+            message: 'An error occurred while processing the request',
+            error: error.message,
+        });
+    }
+}
+}

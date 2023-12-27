@@ -41,7 +41,7 @@ app.listen(port, '0.0.0.0', () => {
 
 db.query('SELECT 1 + 1', (error, results, fields) => {
   if (error) throw error;
-  console.log('Connected to MySQL!');
+    console.log('Connected to MySQL!');
 });
 
 // Example route to check MySQL connection status
