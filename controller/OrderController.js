@@ -14,18 +14,32 @@ module.exports = {
       address: req.body.address,
       phoneNumber: req.body.phoneNumber,
       postalCode: req.body.postalCode,
-      userID : req.body.userID ,
+      userID: req.body.userID,
       totalPrice: req.body.totalPrice,
-      status: 'Draft',
+      products: req.body.products,
+      status: "Draft",
+    };
+    const obj2 = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      country: req.body.country,
+      city: req.body.city,
+      address: req.body.address,
+      phoneNumber: req.body.phoneNumber,
+      postalCode: req.body.postalCode,
+      userID: req.body.userID,
+      totalPrice: req.body.totalPrice,
+      status: "Draft",
     };
 
-    const order_detail_list = req.body.products ;
-
     const orderData = obj;
-
+    console.log("order data: ", orderData);
+    const orderData2 = obj2;
+    console.log("order data: ", orderData2);
     const insertQuery = "INSERT INTO orders SET ?";
 
-    db.query(insertQuery, orderData, (error, result) => {
+    db.query(insertQuery, orderData2, (error, result) => {
       if (error) {
         return res.status(400).json(error);
       }
@@ -56,38 +70,58 @@ module.exports = {
   editOrderById: async (req, res) => {
     try {
       const orderID = req.params.orderID;
-      const { firstName, lastName, email, country, city, address, phoneNumber, postalCode , status , totalPrice } = req.body;
-    
+      const {
+        firstName,
+        lastName,
+        email,
+        country,
+        city,
+        address,
+        phoneNumber,
+        postalCode,
+        status,
+        totalPrice,
+      } = req.body;
+
       const updateSql =
-        'UPDATE orders SET firstName=?, lastName=?, email=?, country=?, city=?, address=?, phoneNumber=? , postalCode=? , status=? , totalPrice=? WHERE orderID=?';
-        
-      const updateValues = [firstName, lastName, email, country, city, address, updatedStatus, orderID];
-  
+        "UPDATE orders SET firstName=?, lastName=?, email=?, country=?, city=?, address=?, phoneNumber=? , postalCode=? , status=? , totalPrice=? WHERE orderID=?";
+
+      const updateValues = [
+        firstName,
+        lastName,
+        email,
+        country,
+        city,
+        address,
+        updatedStatus,
+        orderID,
+      ];
+
       db.query(updateSql, updateValues, (updateErr, updateResult) => {
         if (updateErr) {
           return res.status(500).json({
-            status: 'error',
-            message: 'Internal server error',
+            status: "error",
+            message: "Internal server error",
             error: updateErr.message,
           });
         }
-  
+
         if (updateResult.affectedRows === 0) {
           return res.status(404).json({
-            status: 'error',
+            status: "error",
             message: `Order with ID ${orderID} not found`,
           });
         }
-  
+
         res.json({
-          status: 'success',
+          status: "success",
           message: `Successfully updated Order with ID ${orderID}!`,
         });
       });
     } catch (error) {
       res.status(400).json({
-        status: 'error',
-        message: 'Bad request',
+        status: "error",
+        message: "Bad request",
         error: error.message,
       });
     }
