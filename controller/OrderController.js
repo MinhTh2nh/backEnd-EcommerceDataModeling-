@@ -307,7 +307,7 @@ module.exports = {
   },
   getOrderByUserID: async (req, res) => {
     try {
-      const userID = req.body.userID;
+      const userID = req.params.userID;
       const sql = "SELECT * FROM orders WHERE userID = ?";
       const value = [userID];
 
@@ -379,13 +379,14 @@ module.exports = {
   },
   displayOrderDetailInformation: async (req, res) => {
     try {
-        const orderID = req.body.orderID;
+        const orderID = req.params.orderID;
         // SQL query to retrieve order details along with product name and price
         const getOrderDetailsSql = `
             SELECT 
                 od.productID,
                 p.name,
                 p.price,
+                p.image,
                 od.orderQuantity
             FROM 
                 order_detail od
