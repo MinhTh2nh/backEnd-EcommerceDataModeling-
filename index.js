@@ -14,7 +14,7 @@ const app = express();
 const port = process.env.PORT;
 
 app.use(cors({
-  origin: ['http://localhost:3001'], // Allow requests from these origins
+  origin: ['http://localhost:3000'], // Allow requests from these origins
   credentials: true, // Allow cookies and credentials
 }));
 
