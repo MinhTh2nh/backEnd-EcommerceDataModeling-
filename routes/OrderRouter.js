@@ -8,6 +8,8 @@ router.post("/create", orderController.createOrder);
 router.put("/edit/:orderID", orderController.editOrderById);
 router.get("/get/:orderID", orderController.getOrderById);
 router.get("/getAll", orderController.getAllOrder);
+router.get("/getOrderDetaiLs/:orderID", orderController.getOrderDetaiLs);
+router.get("/getOrder/:orderID", orderController.getOrderById);
 router.delete("/delete/:orderID", validateAdmin, orderController.deleteById);
 getOrderByUserID
 router.get("/getOrderByUserID", orderController.getOrderByUserID);
