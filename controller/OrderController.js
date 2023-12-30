@@ -323,7 +323,7 @@ module.exports = {
         res.json({
           status: "success",
           message: `Successfully retrieved Order with ID ${userID}!`,
-          data: result[0],
+          data: result,
         });
       });
     } catch (error) {
