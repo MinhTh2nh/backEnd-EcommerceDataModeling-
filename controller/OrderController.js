@@ -6,6 +6,7 @@ require("dotenv").config();
 module.exports = {
   createOrder: (req, res) => {
     const orderData = {
+      userID: req.body.userID,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
@@ -14,7 +15,9 @@ module.exports = {
       address: req.body.address,
       phoneNumber: req.body.phoneNumber,
       postalCode: req.body.postalCode,
-      userID: req.body.userID,
+      pMethod: req.body.pMethod,
+      shippingCost: req.body.shippingCost,
+
       totalPrice: req.body.totalPrice,
       status: "Draft",
     };
@@ -145,10 +148,12 @@ module.exports = {
         postalCode,
         status,
         totalPrice,
+        pMethod,
+        shippingCost,
       } = req.body;
 
       const updateSql =
-        "UPDATE orders SET firstName=?, lastName=?, email=?, country=?, city=?, address=?, phoneNumber=?, postalCode=?, status=?, totalPrice=? WHERE orderID=?";
+        "UPDATE orders SET firstName=?, lastName=?, email=?, country=?, city=?, address=?, phoneNumber=?, postalCode=?, status=?, totalPrice=? , pMethod=?, shippingCost=? WHERE orderID=?";
 
       const updateValues = [
         firstName,
@@ -162,6 +167,8 @@ module.exports = {
         status,
         totalPrice,
         orderID,
+        pMethod,
+        shippingCost,
       ];
 
       // Execute the update query
@@ -334,4 +341,73 @@ module.exports = {
       });
     }
   },
+  deleteAllOrder: async (req, res) => {
+    try {
+      const sql = "DELETE FROM orders ";
+      db.query(sql, (err, result) => {
+        if (err) {
+          res.status(400).json(err);
+          return;
+        }
+  
+        res.json({
+          status: "success",
+          message: "Successfully deleted all records from 'orders' table!",
+        });
+      });
+    } catch (err) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+  deleteAllOrderDetails: async (req, res) => {
+    try {
+      const sql = "DELETE FROM order_detail ";
+      db.query(sql, (err, result) => {
+        if (err) {
+          res.status(400).json(err);
+          return;
+        }
+  
+        res.json({
+          status: "success",
+          message: "Successfully deleted all records from 'order_detail' table!",
+        });
+      });
+    } catch (err) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+  displayOrderDetailInformation: async (req, res) => {
+    try {
+        const orderID = req.body.orderID;
+        // SQL query to retrieve order details along with product name and price
+        const getOrderDetailsSql = `
+            SELECT 
+                od.productID,
+                p.name,
+                p.price,
+                od.orderQuantity
+            FROM 
+                order_detail od
+            JOIN
+                products p ON od.productID = p.productID
+            WHERE
+                od.orderID = ?
+        `;
+
+        // Execute the query
+        db.query(getOrderDetailsSql, [orderID], (err, orderDetails) => {
+            if (err) {
+                console.error("Error retrieving order details:", err);
+                return res.status(500).json({ error: "Internal Server Error" });
+            }
+
+            // Send the order details to the client
+            res.json({ orderDetails });
+        });
+    } catch (err) {
+        console.error("Error in displayOrderDetailInformation:", err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 };

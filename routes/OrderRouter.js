@@ -11,8 +11,10 @@ router.get("/getAll", orderController.getAllOrder);
 router.get("/getOrderDetaiLs/:orderID", orderController.getOrderDetaiLs);
 router.get("/getOrder/:orderID", orderController.getOrderById);
 router.delete("/delete/:orderID", validateAdmin, orderController.deleteById);
-getOrderByUserID
+router.delete("/deleteAllOrderDetails", validateAdmin , orderController.deleteAllOrderDetails);
+router.delete("/deleteAllOrder", validateAdmin , orderController.deleteAllOrder);
 router.get("/getOrderByUserID", orderController.getOrderByUserID);
+router.get("/displayOrderDetailInformation", orderController.displayOrderDetailInformation);
 
 //For the MongoDB database -- End Here
 
