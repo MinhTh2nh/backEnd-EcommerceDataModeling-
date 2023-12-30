@@ -298,4 +298,40 @@ module.exports = {
       });
     }
   },
+  getOrderByUserID: async (req, res) => {
+    try {
+      const userID = req.body.userID;
+      const sql = "SELECT * FROM orders WHERE userID = ?";
+      const value = [userID];
+
+      db.query(sql, value, (err, result) => {
+        if (err) {
+          return res.status(500).json({
+            status: "error",
+            message: "Error retrieving order by ID",
+            error: err.message,
+          });
+        }
+
+        if (result.length === 0) {
+          return res.status(404).json({
+            status: "error",
+            message: `Order with ID ${userID} not found`,
+          });
+        }
+
+        res.json({
+          status: "success",
+          message: `Successfully retrieved Order with ID ${userID}!`,
+          data: result[0],
+        });
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: "error",
+        message: "Bad request",
+        error: error.message,
+      });
+    }
+  },
 };
