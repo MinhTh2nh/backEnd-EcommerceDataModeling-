@@ -229,4 +229,38 @@ module.exports = {
       res.status(400).json(error);
     }
   },
+  getOrderById : async (req, res) => {
+    try {
+        const orderID = req.params.orderID;
+        const sql = "SELECT * FROM orders where orderID = ?";
+        const value = [orderID];
+
+        db.query(sql, value ,(err, result) => {
+          res.status(200).json({
+            status: "success",
+            message: "Successfully get a order!",
+            data: result,
+          });
+        });
+      } catch (error) {
+        res.status(400).json(error);
+      }
+    } ,
+    getOrderByUserID : async (req, res) => {
+        try {
+            const userID = req.body.userID;
+            const sql = "SELECT * FROM orders where userID = ?";
+            const value = [userID];
+    
+            db.query(sql, value ,(err, result) => {
+              res.status(200).json({
+                status: "success",
+                message: "Successfully get orders!",
+                data: result,
+              });
+            });
+          } catch (error) {
+            res.status(400).json(error);
+          }
+        }
 };
