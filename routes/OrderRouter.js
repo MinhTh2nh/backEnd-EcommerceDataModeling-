@@ -7,6 +7,8 @@ const { validateAdmin, validateUser } = require("../validator/UsersValidator");
 router.post("/create", orderController.createOrder);
 router.put("/edit/:orderID", orderController.editOrderById);
 router.get("/getAll", orderController.getAllOrder);
+router.get("/getOrderDetaiLs/:orderID", orderController.getOrderDetaiLs);
+router.get("/getOrder/:orderID", orderController.getOrderById);
 router.delete("/delete/:orderID", validateAdmin, orderController.deleteById);
 //For the MongoDB database -- End Here
 
