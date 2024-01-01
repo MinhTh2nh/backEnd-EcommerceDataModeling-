@@ -166,9 +166,9 @@ module.exports = {
         postalCode,
         status,
         totalPrice,
-        orderID,
         pMethod,
         shippingCost,
+        orderID
       ];
 
       // Execute the update query
@@ -241,18 +241,44 @@ module.exports = {
   deleteById: async (req, res) => {
     try {
       const orderID = req.params.orderID;
-      const sql = "DELETE FROM orders WHERE orderID =?";
-      const value = [orderID];
-      db.query(sql, value, (err, result) => {
-        res.json({
-          status: "success",
-          message: `Successfully delete id of ${orderID} !`,
+  
+      // Delete order details first
+      const deleteOrderDetailsSql = "DELETE FROM order_detail WHERE orderID =?";
+      const orderDetailsValue = [orderID];
+      
+      db.query(deleteOrderDetailsSql, orderDetailsValue, (err, result) => {
+        if (err) {
+          return res.status(500).json({
+            status: "error",
+            message: "Error deleting order details",
+          });
+        }
+  
+        // Now, delete the order
+        const deleteOrderSql = "DELETE FROM orders WHERE orderID =?";
+        const orderValue = [orderID];
+  
+        db.query(deleteOrderSql, orderValue, (err, result) => {
+          if (err) {
+            return res.status(500).json({
+              status: "error",
+              message: "Error deleting order",
+            });
+          }
+  
+          res.json({
+            status: "success",
+            message: `Successfully deleted order and related details for orderID ${orderID}!`,
+          });
         });
       });
     } catch (err) {
-      res.status(400).json(error);
+      res.status(400).json({
+        status: "error",
+        message: "Bad request",
+      });
     }
-  },
+  },  
   getOrderDetaiLs: async (req, res) => {
     try {
       const orderID = req.params.orderID;
