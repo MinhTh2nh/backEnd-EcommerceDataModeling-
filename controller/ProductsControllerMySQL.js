@@ -194,7 +194,8 @@ module.exports = {
   checkQuantityOfProduct: async (req, res) => {
     try {
         const productID = req.body.productID;
-        const requestedQuantity = req.body.quantity;
+        const requestedQuantity = req.body.orderQuantity;
+        const price = req.body.price;
         const sql = 'SELECT quantity FROM products WHERE productID = ?';
         const values = [productID];
 
