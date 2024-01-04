@@ -14,6 +14,7 @@ router.get("/getOrder/:orderID", orderController.getOrderById);
 router.delete("/delete/:orderID", validateAdmin, orderController.deleteById);
 router.delete("/deleteAllOrderDetails", validateAdmin , orderController.deleteAllOrderDetails);
 router.delete("/deleteAllOrder", validateAdmin , orderController.deleteAllOrder);
+
 router.get("/getOrderByUserID/:userID", orderController.getOrderByUserID);
 
 router.get("/displayOrderDetailInformation/:orderID", orderController.displayOrderDetailInformation);
